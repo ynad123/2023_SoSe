@@ -1,2 +1,2 @@
-deta
+uvicorn
 fastapi
