@@ -1,6 +1,8 @@
 #main
 #  start local e.g.: python3 -m uvicorn main:app --reload --port 8000
 from fastapi import FastAPI, Request
+from datetime import datetime
+
 app = FastAPI()
 
 werte = [{"tstamp": "2023-02-17 14:48:00","value": 42,"id": 1},
@@ -33,8 +35,29 @@ async def read_werte(id: int):
 @app.post("/werte")
 async def newWert(wert: Request):
     new_wert = await wert.json()
-    werte.append(new_wert);
     
+    #handle id
+    try:
+        current_id=new_wert['id']
+    except:
+        #find next id
+        max=werte[0]['id']
+        for w in werte:
+            if (int(w['id'])>max):
+                max = w['id']
+        new_wert['id']=max+1
+    
+    #handle tstamp
+    try:
+        current_tstamp=new_wert['tstamp']
+    except:
+        #no tstamp
+        # "2023-03-03 09:53:00"
+        current_tstamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        new_wert['tstamp']=current_tstamp
+    
+    werte.append(new_wert);
+ 
     return {
         "status" : "SUCCESS",
         "data" : new_wert
