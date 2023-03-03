@@ -1,7 +1,7 @@
 #main
 #  start local e.g.: python3 -m uvicorn main:app --reload --port 8000
 from fastapi import FastAPI, Request
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = FastAPI()
 
@@ -53,7 +53,7 @@ async def newWert(wert: Request):
     except:
         #no tstamp
         # "2023-03-03 09:53:00"
-        current_tstamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        current_tstamp = (datetime.now()+ timedelta(hours=1)).strftime("%Y-%m-%d %H:%M:%S")
         new_wert['tstamp']=current_tstamp
     
     werte.append(new_wert);
