@@ -5,8 +5,7 @@ from datetime import datetime, timedelta
 
 app = FastAPI()
 
-
-
+#add track-id
 werte = [{"tstamp": "2023-02-17 14:48:00","value": 42,"id": 1, "track_id": "1"},
            {"tstamp": "2023-02-17 14:49:00","value": 34,"id": 2, "track_id": "1"},
            {"tstamp": "2023-02-17 14:50:00","value": 17,"id": 3, "track_id": "1"}]
