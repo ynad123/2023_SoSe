@@ -6,12 +6,13 @@ from datetime import datetime, timedelta
 app = FastAPI()
 
 #add track-id
-werte = [{"tstamp": "2023-02-17 14:48:00","value": 42,"id": 1, "track_id": "1"},
-           {"tstamp": "2023-02-17 14:49:00","value": 34,"id": 2, "track_id": "1"},
-           {"tstamp": "2023-02-17 14:50:00","value": 17,"id": 3, "track_id": "1"}]
+werte = [{"tstamp": "2023-02-17 14:48:00","value": 42,"id": 1, "track": "1"},
+           {"tstamp": "2023-02-17 14:49:00","value": 34,"id": 2, "track": "1"},
+           {"tstamp": "2023-02-17 14:50:00","value": 17,"id": 3, "track": "1"}]
 
 @app.get("/werte")
 async def root_werte():
+    print("in /werte")
     return werte
 
 @app.get("/werte/latest")
@@ -23,6 +24,14 @@ async def read_werte_latest():
     else:
         return {}
     
+@app.get("/werte/track/{track_str}")
+async def read_werte_forTrack(track_str: str):
+    print("in function")
+    retWerte=[]
+    for w in werte:
+        if w['track'] == track_str:
+            retWerte.append(w);
+    return retWerte
 
 @app.get("/werte/{id}")
 async def read_werte(id: int):
