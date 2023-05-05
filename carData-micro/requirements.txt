@@ -1,2 +1,5 @@
 uvicorn
 fastapi
+fastapi_mqtt
+json
+
