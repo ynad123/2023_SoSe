@@ -2,18 +2,60 @@
 #  start local e.g.: python3 -m uvicorn main:app --reload --port 8000
 from fastapi import FastAPI, Request
 from datetime import datetime, timedelta
-
-app = FastAPI()
+from fastapi_mqtt import FastMQTT, MQTTConfig
+import json
 
 #add track-id
 werte = [{"tstamp": "2023-02-17 14:48:00","value": 42,"id": 1, "track": "1"},
            {"tstamp": "2023-02-17 14:49:00","value": 34,"id": 2, "track": "1"},
            {"tstamp": "2023-02-17 14:50:00","value": 17,"id": 3, "track": "1"}]
 
+max_gps_werte = 100
+gps_werte = []
+
+app = FastAPI()
+
+mqtt_config = MQTTConfig()
+mqtt_config.host="broker.hivemq.com"
+mqtt_config.port=1883
+fast_mqtt = FastMQTT(mqtt_config)
+
+fast_mqtt.init_app(app)
+
+
+@fast_mqtt.on_connect()
+def connect(client, flags, rc, properties):
+    print("Connected: ", client, flags, rc, properties)
+
+@fast_mqtt.subscribe("ima_test")
+async def message_to_topic(client, topic, payload, qos, properties):
+    #print("Received message to specific topic: ", topic, payload.decode(), qos, properties)
+    gps_wertStr = payload.decode()
+    gps_wert = json.loads(gps_wertStr)
+    print(gps_wert)
+    gps_werte.append(gps_wert);
+    if (len(gps_werte)>max_gps_werte):
+        gps_werte.pop(0)
+    
+    
+
+@fast_mqtt.on_disconnect()
+def disconnect(client, packet, exc=None):
+    print("Disconnected")
+
+@fast_mqtt.on_subscribe()
+def subscribe(client, mid, qos, properties):
+    print("subscribed", client, mid, qos, properties)
+
+#-------------------------------------------------------------------------------------------
 @app.get("/werte")
 async def root_werte():
     print("in /werte")
     return werte
+
+@app.get("/gpswerte")
+async def root_werteGPS():
+    return gps_werte
 
 @app.get("/werte/latest")
 async def read_werte_latest():
@@ -21,6 +63,15 @@ async def read_werte_latest():
     l = len(werte)
     if l>0:
         return werte[l-1]
+    else:
+        return {}
+    
+@app.get("/gpswerte/latest")
+async def read_gpswerte_latest():
+    #fget the last values
+    l = len(gps_werte)
+    if l>0:
+        return gps_werte[l-1]
     else:
         return {}
     
