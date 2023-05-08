@@ -48,6 +48,11 @@ def subscribe(client, mid, qos, properties):
     print("subscribed", client, mid, qos, properties)
 
 #-------------------------------------------------------------------------------------------
+@app.on_event("startup")
+async def app_startup():
+    await print ("Server startd")
+    
+
 @app.get("/werte")
 async def root_werte():
     print("in /werte")
