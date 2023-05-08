@@ -50,8 +50,11 @@ def subscribe(client, mid, qos, properties):
 #-------------------------------------------------------------------------------------------
 @app.on_event("startup")
 async def app_startup():
-    print ("Server startd")
+    print ("IMA-Server started")
     
+@app.on_event("shutdown")
+async def app_shutdown():
+    print ("shutdown IMA-Server")
 
 @app.get("/werte")
 async def root_werte():
