@@ -50,7 +50,7 @@ def subscribe(client, mid, qos, properties):
 #-------------------------------------------------------------------------------------------
 @app.on_event("startup")
 async def app_startup():
-    await print ("Server startd")
+    print ("Server startd")
     
 
 @app.get("/werte")
